@@ -12,14 +12,46 @@ const Contact = () => {
   const [formState, setFormState] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
+    nameNeeded: false,
+    messageNeeded: false,
+    invalidEmail: false
   })
   
   const handleInputChange = ({target: {name, value}}) => {
     setFormState({ ...formState, [name]: value })
   } 
 
+  const handleNameBlur = () => {
+    if(formState.name === "") {
+      setFormState({...formState, nameNeeded: true, messageNeeded: false, invalidEmail: false})
+    }
+  }
 
+  const handleMessageBlur = () => {
+    if (formState.message === "") {
+      setFormState({ ...formState, messageNeeded: true, nameNeeded: false, invalidEmail: false})
+    }
+  }
+
+  function validateEmail(inputText) {
+    var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (inputText.match(mailformat)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  const handleEmailBlur = () => {
+    if(validateEmail(formState.email)===true){
+      console.log('valid email')
+    }else{
+      setFormState({...formState, invalidEmail: true, nameNeeded: false, messageNeeded: false})
+    }
+    
+  }
 
 
   return (
@@ -35,6 +67,7 @@ const Contact = () => {
               <Input 
               name="name"
               onChange={handleInputChange}
+              onBlur={handleNameBlur}
               aria-describedby="my-helper-text" />
               <FormHelperText id="my-helper-text">We'll never share your info.</FormHelperText>
             </FormControl>
@@ -48,6 +81,7 @@ const Contact = () => {
               <Input 
               name="email"
               onChange={handleInputChange}
+              onBlur={handleEmailBlur}
               aria-describedby="my-helper-text" />
             </FormControl>
           </Grid>
@@ -59,6 +93,7 @@ const Contact = () => {
               fullWidth
               name="message"
               onChange={handleInputChange}
+              onBlur={handleMessageBlur}
             />
           </Grid>
         </Grid>
@@ -68,6 +103,17 @@ const Contact = () => {
         <Grid item>
           <Button>Submit</Button>
         </Grid>
+      </Grid>
+      <Grid container justifyContent="center">
+        {
+          formState.nameNeeded? <p>Name is a required field!</p> : ''
+        }
+        {
+          formState.messageNeeded? <p>Message is required!</p> : ''
+        }
+        {
+          formState.invalidEmail? <p>Please enter a valid email address!</p> : ''
+        }
       </Grid>
     </>
   )
